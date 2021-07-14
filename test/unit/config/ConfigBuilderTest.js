@@ -243,7 +243,7 @@ describe('ConfigBuilderTest', function () {
     });
 });
 
-describe('ConfigBuilderRangeValidationTest', function () {
+describe('ConfigBuilderValidationTest', function () {
     describe('connectionRetryConfig', function () {
         it('should validate initial backoff', function () {
             const invalidValues = [-1, undefined, null, -0.1, [], {}];
@@ -355,5 +355,75 @@ describe('ConfigBuilderRangeValidationTest', function () {
                 }).build()).not.to.throw();
             }
         });
+    });
+
+    it('should throw InvalidConfigurationError when invalid top level config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            a: 1
+        }).build()).to.throw(InvalidConfigurationError);
+    });
+
+    it('should throw InvalidConfigurationError when invalid network config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            network: {
+                a: 1
+            }
+        }).build()).to.throw(InvalidConfigurationError);
+    });
+
+    it('should throw InvalidConfigurationError when invalid connectionStrategy config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            connectionStrategy: {
+                a: 1
+            }
+        }).build()).to.throw(InvalidConfigurationError);
+    });
+
+    it('should throw InvalidConfigurationError when invalid loadBalancer config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            loadBalancer: {
+                a: 1
+            }
+        }).build()).to.throw(InvalidConfigurationError);
+    });
+
+    it('should throw InvalidConfigurationError when invalid serialization config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            serialization: {
+                a: 1
+            }
+        }).build()).to.throw(InvalidConfigurationError);
+    });
+
+    it('should throw InvalidConfigurationError when invalid distributed objects config key is passed', function () {
+        expect(() => new ConfigBuilder({
+            nearCaches: [
+                {
+                    nearCache1: {
+                        a: 1
+                    }
+                }
+            ]
+        }).build()).to.throw(InvalidConfigurationError);
+
+        expect(() => new ConfigBuilder({
+            reliableTopics: [
+                {
+                    reliableTopic1: {
+                        a: 1
+                    }
+                }
+            ]
+        }).build()).to.throw(InvalidConfigurationError);
+
+        expect(() => new ConfigBuilder({
+            flakeIdGenerators: [
+                {
+                    flakeIdGenerator1: {
+                        a: 1
+                    }
+                }
+            ]
+        }).build()).to.throw(InvalidConfigurationError);
     });
 });

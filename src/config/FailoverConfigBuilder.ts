@@ -65,6 +65,8 @@ export class FailoverConfigBuilder {
                     const config = builder.build();
                     this.effectiveConfig.clientConfigs.push(config);
                 }
+            } else {
+                throw new RangeError(`Unexpected config key '${key}' is passed to the Hazelcast Failover Client`);
             }
         }
     }

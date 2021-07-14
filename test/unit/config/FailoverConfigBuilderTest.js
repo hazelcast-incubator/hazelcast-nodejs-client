@@ -16,7 +16,7 @@
 'use strict';
 
 const { expect } = require('chai');
-const { HazelcastError } = require('../../../lib');
+const { HazelcastError, InvalidConfigurationError } = require('../../../lib');
 const { FailoverConfigBuilder } = require('../../../lib/config/FailoverConfigBuilder');
 const { ClientConfigImpl } = require('../../../lib/config/Config');
 
@@ -258,5 +258,21 @@ describe('FailoverConfigBuilderTest', function () {
         expect(config.clientConfigs).to.have.lengthOf(2);
         expect(config.clientConfigs[0]).to.be.instanceOf(ClientConfigImpl);
         expect(config.clientConfigs[1]).to.be.instanceOf(ClientConfigImpl);
+    });
+
+    it('should throw InvalidConfigurationError when invalid config key is passed', function () {
+        const listener1 = () => console.log('foo');
+        const builder = new FailoverConfigBuilder({
+            tryCount: 1,
+            clientCofigs: [
+                {
+                    lifecycleListeners: [ listener1 ]
+                }
+            ]
+        });
+
+        expect((() => {
+            builder.build();
+        })).to.throw(InvalidConfigurationError);
     });
 });
