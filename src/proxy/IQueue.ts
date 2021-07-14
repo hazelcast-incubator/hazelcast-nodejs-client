@@ -154,8 +154,8 @@ export interface IQueue<E> extends DistributedObject {
     size(): Promise<number>;
 
     /**
-     * Retrieves and removes the head of this queue. It waits to return until
-     * an element becomes available if neccessary.
+     * Retrieves and removes the head of this queue, waiting if necessary
+     * until an element becomes available.
      * @param item
      * @return head of the queue.
      */
