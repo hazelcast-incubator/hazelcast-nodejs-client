@@ -24,9 +24,18 @@ import {
     IdentifiedDataSerializableFactory
 } from './Serializable';
 import {
+    Big,
+    BigDecimal,
     HazelcastJsonValue,
+    HzLocalDate,
+    HzLocalDateTime,
+    HzLocalTime,
+    HzOffsetDateTime,
     UUID
 } from '../core';
+import {fromBufferAndScale, bigintToByteArray} from '../util/BigDecimalUtil';
+import {Buffer} from 'buffer';
+import {IOUtil} from '../util/IOUtil';
 
 /** @internal */
 export class StringSerializer implements Serializer<string> {
@@ -428,3 +437,93 @@ export class UuidSerializer implements Serializer<UUID> {
         output.writeLong(uuid.leastSignificant);
     }
 }
+
+/** @internal */
+export class LocalDateSerializer implements Serializer<HzLocalDate> {
+
+    id = -51;
+
+    read(input: DataInput): HzLocalDate {
+        return IOUtil.readHzLocalDate(input);
+    }
+
+    write(output: DataOutput, hzLocalDate: HzLocalDate): void {
+        IOUtil.writeHzLocalDate(output, hzLocalDate);
+    }
+}
+
+/** @internal */
+export class LocalTimeSerializer implements Serializer<HzLocalTime> {
+
+    id = -52;
+
+    read(input: DataInput): HzLocalTime {
+        return IOUtil.readHzLocalTime(input);
+    }
+
+    write(output: DataOutput, hzLocalTime: HzLocalTime): void {
+        IOUtil.writeHzLocalTime(output, hzLocalTime);
+    }
+}
+
+/** @internal */
+export class LocalDateTimeSerializer implements Serializer<HzLocalDateTime> {
+
+    id = -53;
+
+    read(input: DataInput): HzLocalDateTime {
+        return IOUtil.readHzLocalDatetime(input);
+    }
+
+    write(output: DataOutput, hzLocalDateTime: HzLocalDateTime): void {
+        IOUtil.writeHzLocalDatetime(output, hzLocalDateTime);
+    }
+}
+
+/** @internal */
+export class OffsetDateTimeSerializer implements Serializer<HzOffsetDateTime> {
+
+    id = -54;
+
+    read(input: DataInput): HzOffsetDateTime {
+        return IOUtil.readHzOffsetDatetime(input);
+    }
+
+    write(output: DataOutput, hzOffsetDateTime: HzOffsetDateTime): void {
+       IOUtil.writeHzOffsetDatetime(output, hzOffsetDateTime);
+    }
+}
+
+/** @internal */
+export class BigDecimalSerializer implements Serializer<BigDecimal> {
+
+    id = -27;
+
+    read(input: DataInput): BigDecimal {
+        const body = input.readByteArray();
+        const scale = input.readInt();
+
+        return Big(fromBufferAndScale(body, scale));
+    }
+
+    write(output: DataOutput, bigDecimal: BigDecimal): void {
+        output.writeByteArray(bigintToByteArray(bigDecimal.unscaledValue));
+        output.writeInt(bigDecimal.scale);
+    }
+}
+
+/** @internal */
+export class BigIntSerializer implements Serializer<BigInt> {
+
+    id = -26;
+
+    read(input: DataInput): BigInt {
+        const body = input.readByteArray();
+        return IOUtil.readBigInt(body);
+    }
+
+    write(output: DataOutput, bigint: BigInt): void {
+        output.writeByteArray(bigintToByteArray(bigint));
+    }
+}
+

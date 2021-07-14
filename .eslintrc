@@ -2,7 +2,7 @@
     "env": {
         "commonjs": true,
         "node": true,
-        "es2017": true
+        "es2020": true
     },
     "extends": "eslint:recommended",
     "rules": {
@@ -100,6 +100,6 @@
         "curly": "error"
     },
     "parserOptions": {
-        "ecmaVersion": 2018
+        "ecmaVersion": 2020
     }
 }

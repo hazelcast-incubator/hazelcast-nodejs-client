@@ -15,54 +15,70 @@
  */
 'use strict';
 
-const { expect } = require('chai');
+const { expect, should } = require('chai');
 const { ClassDefinition, FieldDefinition } = require('../../../../lib/serialization/portable/ClassDefinition');
+
+should();
 
 describe('ClassDefinitionTest', function () {
 
-    const a = new ClassDefinition(1, 2, 3);
+    let cd;
+    beforeEach(function () {
+        cd = new ClassDefinition(1, 2, 3);
+    });
+
+    it('getFieldNames(): should work', function () {
+        cd.addFieldDefinition(new FieldDefinition(0, 'firstField', FieldDefinition.INT, 10, 10));
+        cd.addFieldDefinition(new FieldDefinition(1, 'secondField', FieldDefinition.CHAR_ARRAY, 11, 11));
+        const fieldNames = cd.getFieldNames();
+        Array.isArray(fieldNames).should.be.true;
+        fieldNames.length.should.be.eq(2);
+        fieldNames.should.include('firstField');
+        fieldNames.should.include('secondField');
+    });
 
     it('getFieldType():firstField should be type of FD.INT.', function () {
-        a.addFieldDefinition(new FieldDefinition(0, 'firstField', FieldDefinition.INT, 10, 10));
-        const type = a.getFieldType('firstField');
+        cd.addFieldDefinition(new FieldDefinition(0, 'firstField', FieldDefinition.INT, 10, 10));
+        const type = cd.getFieldType('firstField');
         expect(type).equal(FieldDefinition.INT);
     });
 
     it('getFieldType():secondField should be type of FD.STRING.', function () {
-        a.addFieldDefinition(new FieldDefinition(1, 'secondField', FieldDefinition.CHAR_ARRAY, 11, 11));
-        const type = a.getFieldType('secondField');
+        cd.addFieldDefinition(new FieldDefinition(1, 'secondField', FieldDefinition.CHAR_ARRAY, 11, 11));
+        const type = cd.getFieldType('secondField');
         expect(type).equal(FieldDefinition.CHAR_ARRAY);
     });
 
     it('getFieldType():thirdField should be null because we will not add it. (It does not exist.)', function () {
-        expect(a.getFieldType.bind(a, 'thirdField')).to.throw(Error);
+        expect(cd.getFieldType.bind(cd, 'thirdField')).to.throw(RangeError);
     });
 
     it('hasField():field was added so it should be return true.', function () {
-        a.addFieldDefinition(new FieldDefinition(2, 'aField', FieldDefinition.INT, 10, 10));
-        expect(a.hasField('aField')).to.be.true;
+        cd.addFieldDefinition(new FieldDefinition(2, 'aField', FieldDefinition.INT, 10, 10));
+        expect(cd.hasField('aField')).to.be.true;
     });
 
     it('hasField():field was not added so it should be return false.', function () {
-        const res = a.hasField('anotherField');
+        const res = cd.hasField('anotherField');
         expect(res).to.be.false;
     });
 
     it('getFieldById():When index is not an integer it should throw an range exception.', function () {
-        expect(a.getFieldById.bind(a, 0.3)).to.throw(Error);
+        expect(cd.getFieldById.bind(cd, 0.3)).to.throw(RangeError);
     });
 
     it('getFieldById():When index is negative it should throw an range exception.', function () {
-        expect(a.getFieldById.bind(a, -2)).to.throw(Error);
+        expect(cd.getFieldById.bind(cd, -2)).to.throw(RangeError);
     });
 
     it('getFieldById():When a field with given index is found.', function () {
-        expect(a.getFieldById.bind(a, 0)).to.not.throw(Error);
+        cd.addFieldDefinition(new FieldDefinition(0, 'firstField', FieldDefinition.INT, 10, 10));
+        expect(cd.getFieldById.bind(cd, 0)).to.not.throw(RangeError);
     });
 
     it('getFieldById():When index is more than or equal to total number of fields it should throw an range exception.',
         function () {
-            expect(a.getFieldById.bind(a, 3)).to.throw(Error);
+            expect(cd.getFieldById.bind(cd, 3)).to.throw(RangeError);
         }
     );
 
