@@ -77,7 +77,7 @@ export class ObjectDataOutput implements DataOutput {
         this.write(val ? 1 : 0);
     }
 
-    writeBooleanArray(val: boolean[]): void {
+    writeBooleanArray(val: boolean[] | null): void {
         this.writeArray(this.writeBoolean, val);
     }
 
@@ -128,7 +128,7 @@ export class ObjectDataOutput implements DataOutput {
         this.pos += BitsUtil.DOUBLE_SIZE_IN_BYTES;
     }
 
-    writeDoubleArray(doubles: number[]): void {
+    writeDoubleArray(doubles: number[] | null): void {
         this.writeArray(this.writeDouble, doubles);
     }
 
@@ -138,7 +138,7 @@ export class ObjectDataOutput implements DataOutput {
         this.pos += BitsUtil.FLOAT_SIZE_IN_BYTES;
     }
 
-    writeFloatArray(floats: number[]): void {
+    writeFloatArray(floats: number[] | null): void {
         this.writeArray(this.writeFloat, floats);
     }
 
@@ -154,7 +154,7 @@ export class ObjectDataOutput implements DataOutput {
         this.pos += BitsUtil.INT_SIZE_IN_BYTES;
     }
 
-    writeIntArray(ints: number[]): void {
+    writeIntArray(ints: number[] | null): void {
         this.writeArray(this.writeInt, ints);
     }
 
@@ -173,7 +173,7 @@ export class ObjectDataOutput implements DataOutput {
         }
     }
 
-    writeLongArray(longs: Long[]): void {
+    writeLongArray(longs: Long[] | null): void {
         this.writeArray(this.writeLong, longs);
     }
 
@@ -187,15 +187,15 @@ export class ObjectDataOutput implements DataOutput {
         this.pos += BitsUtil.SHORT_SIZE_IN_BYTES;
     }
 
-    writeShortArray(shorts: number[]): void {
+    writeShortArray(shorts: number[] | null): void {
         this.writeArray(this.writeShort, shorts);
     }
 
-    writeUTF(val: string): void {
+    writeUTF(val: string | null): void {
         this.writeString(val);
     }
 
-    writeString(val: string): void {
+    writeString(val: string | null): void {
         const len = (val != null) ? Buffer.byteLength(val, 'utf8') : BitsUtil.NULL_ARRAY_LENGTH;
         this.writeInt(len);
         if (len === BitsUtil.NULL_ARRAY_LENGTH) {
@@ -207,11 +207,11 @@ export class ObjectDataOutput implements DataOutput {
         this.pos += len;
     }
 
-    writeUTFArray(val: string[]): void {
+    writeUTFArray(val: string[] | null): void {
         this.writeStringArray(val);
     }
 
-    writeStringArray(val: string[]): void {
+    writeStringArray(val: string[] | null): void {
         this.writeArray(this.writeString, val);
     }
 
@@ -233,7 +233,7 @@ export class ObjectDataOutput implements DataOutput {
         }
     }
 
-    private writeArray(func: (val: any) => void, arr: any[]): void {
+    private writeArray(func: (val: any) => void, arr: any[] | null): void {
         const len = (arr != null) ? arr.length : BitsUtil.NULL_ARRAY_LENGTH;
         this.writeInt(len);
         if (len > 0) {
@@ -342,7 +342,7 @@ export class ObjectDataInput implements DataInput {
         return this.read(pos) === 1;
     }
 
-    readBooleanArray(pos?: number): boolean[] {
+    readBooleanArray(pos?: number): boolean[] | null {
         return this.readArray<boolean>(this.readBoolean, pos);
     }
 
@@ -350,7 +350,7 @@ export class ObjectDataInput implements DataInput {
         return this.read(pos);
     }
 
-    readByteArray(pos?: number): Buffer {
+    readByteArray(pos?: number): Buffer | null {
         const backupPos = this.pos;
         if (pos !== undefined) {
             this.pos = pos;
@@ -383,11 +383,11 @@ export class ObjectDataInput implements DataInput {
         return String.fromCharCode(readBytes);
     }
 
-    readCharArray(pos?: number): string[] {
+    readCharArray(pos?: number): string[] | null {
         return this.readArray<string>(this.readChar, pos);
     }
 
-    readData(): Data {
+    readData(): Data | null {
         const bytes = this.readByteArray();
         const data: Data = bytes === null ? null : new HeapData(Buffer.from(bytes));
         return data;
@@ -405,7 +405,7 @@ export class ObjectDataInput implements DataInput {
         return ret;
     }
 
-    readDoubleArray(pos?: number): number[] {
+    readDoubleArray(pos?: number): number[] | null {
         return this.readArray<number>(this.readDouble, pos);
     }
 
@@ -421,7 +421,7 @@ export class ObjectDataInput implements DataInput {
         return ret;
     }
 
-    readFloatArray(pos?: number): number[] {
+    readFloatArray(pos?: number): number[] | null {
         return this.readArray<number>(this.readFloat, pos);
     }
 
@@ -437,7 +437,7 @@ export class ObjectDataInput implements DataInput {
         return ret;
     }
 
-    readIntArray(pos?: number): number[] {
+    readIntArray(pos?: number): number[] | null {
         return this.readArray<number>(this.readInt, pos);
     }
 
@@ -461,7 +461,7 @@ export class ObjectDataInput implements DataInput {
         }
     }
 
-    readLongArray(pos?: number): Long[] {
+    readLongArray(pos?: number): Long[] | null {
         return this.readArray<Long>(this.readLong, pos);
     }
 
@@ -481,7 +481,7 @@ export class ObjectDataInput implements DataInput {
         return ret;
     }
 
-    readShortArray(pos?: number): number[] {
+    readShortArray(pos?: number): number[] | null {
         return this.readArray<number>(this.readShort, pos);
     }
 
@@ -493,11 +493,11 @@ export class ObjectDataInput implements DataInput {
         return this.readChar(pos).charCodeAt(0);
     }
 
-    readUTF(pos?: number): string {
+    readUTF(pos?: number): string | null {
         return this.readString(pos);
     }
 
-    readString(pos?: number): string {
+    readString(pos?: number): string | null {
         const len = this.readInt(pos);
         const readPos = this.addOrUndefined(pos, 4) || this.pos;
         if (len === BitsUtil.NULL_ARRAY_LENGTH) {
@@ -510,11 +510,11 @@ export class ObjectDataInput implements DataInput {
         return result;
     }
 
-    readUTFArray(pos?: number): string[] {
+    readUTFArray(pos?: number): string[] | null {
         return this.readStringArray(pos);
     }
 
-    readStringArray(pos?: number): string[] {
+    readStringArray(pos?: number): string[] | null {
         return this.readArray<string>(this.readString, pos);
     }
 
@@ -538,7 +538,7 @@ export class ObjectDataInput implements DataInput {
         return raw;
     }
 
-    private readArray<T>(func: () => any, pos?: number): T[] {
+    private readArray<T>(func: () => any, pos?: number): T[] | null {
         const backupPos = this.pos;
         if (pos !== undefined) {
             this.pos = pos;

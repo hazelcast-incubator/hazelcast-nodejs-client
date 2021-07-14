@@ -100,10 +100,10 @@ configParams.forEach((cfg) => {
             await RC.terminateCluster(cluster.id);
         });
 
-        it('getDistributedObject returns empty array when there is no distributed object', async function () {
+        it('getDistributedObject returns array with one element when there is no distributed object', async function () {
             const distributedObjects = await client.getDistributedObjects();
             expect(distributedObjects).to.be.an('array');
-            expect(distributedObjects).to.be.empty;
+            expect(distributedObjects).to.have.lengthOf(0);
         });
 
         it('getLocalEndpoint returns correct info', function () {
@@ -124,7 +124,7 @@ configParams.forEach((cfg) => {
                 const names = distObjects.map((o) => {
                     return o.getName();
                 });
-                expect(names).to.have.members(['map', 'set']);
+                expect(names).to.include.members(['map', 'set']);
             }, 100, 5000);
         });
 
@@ -139,7 +139,7 @@ configParams.forEach((cfg) => {
                 const names = distObjects.map(o => {
                     return o.getName();
                 });
-                expect(names).to.have.members(['map2', 'map3']);
+                expect(names).to.include.members(['map2', 'map3']);
             }, 100, 5000);
         });
     });

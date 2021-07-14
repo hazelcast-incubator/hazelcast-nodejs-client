@@ -489,7 +489,7 @@ export class HazelcastClient {
      *
      * see {@link SqlService}
      */
-    getSqlService(): SqlService {
+    getSql(): SqlService {
         return this.sqlService;
     }
 

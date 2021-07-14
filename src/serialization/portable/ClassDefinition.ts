@@ -81,6 +81,10 @@ export class ClassDefinition {
         throw new RangeError(`There is no field with index ${index}`);
     }
 
+    getFieldNames() {
+        return Object.keys(this.fields);
+    }
+
     equals(o: ClassDefinition): boolean {
         if (!(o instanceof ClassDefinition)) {
             return false;
