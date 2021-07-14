@@ -1,0 +1,40 @@
+name: PR Builder
+on: pull_request
+
+jobs:
+    test-pr:
+        name: Test PR (${{matrix.os}})
+        runs-on: ${{matrix.os}}
+
+        strategy:
+          matrix:
+              os: [ ubuntu-latest, windows-latest ]
+
+        steps:
+          - name: Setup Java
+            uses: actions/setup-java@v1
+            with:
+              java-version: 8
+          - name: Setup Node.js
+            uses: actions/setup-node@v2
+            with:
+                node-version: 10
+          - name: Disable line ending conversion of git
+            if: ${{ matrix.os == 'windows-latest'}}
+            run: |
+                git config --global core.autocrlf false
+          - name: Checkout code
+            uses: actions/checkout@v2
+          - name: Install dependencies and compile client
+            run: |
+                npm install
+                npm run compile
+          - name: Lint
+            run: |
+                npm run lint
+          - name: Validate User Code
+            run: |
+                npm run validate-user-code
+          - name: Run OS tests
+            run: |
+                npm run coverage
