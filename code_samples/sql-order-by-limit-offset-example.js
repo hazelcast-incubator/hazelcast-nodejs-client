@@ -15,41 +15,49 @@
  */
 'use strict';
 
-const { Client, SqlColumnType } = require('hazelcast-client');
+const { Client } = require('..');
 
 (async () => {
     try {
         const client = await Client.newHazelcastClient();
         const map = await client.getMap('myMap');
 
+        // populate map
         await map.put('key1', 1);
         await map.put('key2', 2);
         await map.put('key3', 3);
+        await map.put('key4', 4);
+        await map.put('key5', 5);
 
-        let result = client.getSql().execute('SELECT __key, this FROM myMap WHERE this > ?', [1]);
-        const rowMetadata = await result.getRowMetadata();
-        const columns = await rowMetadata.getColumns();
+        const result = client.getSql().execute('SELECT * FROM myMap');
 
-        console.log('Columns:');
-        for (const column of columns) {
-            console.log(`${column.name}: ${SqlColumnType[column.type]}`);
-        }
-
-        console.log('Rows from query 1:');
+        console.log('Rows from unsorted query:');
         for await (const row of result) {
-            // By default a row is a plain javascript object where keys are column names and values are column values
             console.log(`${row['__key']}: ${row['this']}`);
         }
 
-        // You can set returnRawResult to true to get rows as `SqlRow` objects
-        result = client.getSql().execute('SELECT __key, this FROM myMap WHERE this > ?', [1], {
-            returnRawResult: true
+        // In order to add an index clear the map.
+        await map.clear();
+
+        // Add an SORTED index to value field.
+        await map.addIndex({
+            type: 'SORTED',
+            attributes: ['this']
         });
 
-        console.log('Rows from query 2:');
-        for await (const row of result) {
-            console.log(`${row.getObject('__key')}: ${row.getObject('this')}`);
-            console.log(JSON.stringify(row.getMetadata())); // SqlRow has a getter for row metadata
+        // populate map
+        await map.put('key1', 1);
+        await map.put('key2', 2);
+        await map.put('key3', 3);
+        await map.put('key4', 4);
+        await map.put('key5', 5);
+
+        // Expected to see 2 3 4
+        const result2 = client.getSql().execute('SELECT * FROM myMap ORDER BY this ASC LIMIT 3 OFFSET 1');
+
+        console.log('Rows from sorted query with limit 3 and offset 1:');
+        for await (const row of result2) {
+            console.log(`${row['__key']}: ${row['this']}`);
         }
 
         await client.shutdown();

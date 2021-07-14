@@ -18,7 +18,7 @@
 import * as assert from 'assert';
 import * as Long from 'long';
 import * as Path from 'path';
-import {UUID} from '../core';
+import {BigDecimal, HzLocalDate, HzLocalDateTime, HzLocalTime, HzOffsetDateTime, UUID} from '../core';
 
 /** @internal */
 export function assertNotNull(v: any): void {
@@ -69,10 +69,20 @@ export function getType(obj: any): string {
     assertNotNull(obj);
     if (Long.isLong(obj)) {
         return 'long';
-    } if (Buffer.isBuffer(obj)) {
+    } else if (Buffer.isBuffer(obj)) {
         return 'buffer';
-    } if (UUID.isUUID(obj)) {
+    } else if (UUID.isUUID(obj)) {
         return 'uuid';
+    } else if (obj instanceof HzLocalDate) {
+        return 'localDate';
+    } else if (obj instanceof HzLocalTime) {
+        return 'localTime';
+    } else if (obj instanceof HzLocalDateTime) {
+        return 'localDatetime';
+    } else if (obj instanceof HzOffsetDateTime) {
+        return 'offsetDatetime';
+    } else if (obj instanceof BigDecimal) {
+        return 'bigdecimal';
     } else {
         const t = typeof obj;
         if (t !== 'object') {

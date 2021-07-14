@@ -15,8 +15,7 @@
  */
 'use strict';
 
-const { Client, SqlColumnType } =
-    require('..');
+const { Client, SqlColumnType } = require('..');
 const long = require('long');
 
 // Portable class
@@ -47,7 +46,7 @@ const varcharExample = async (client) => {
         await someMap.set(key, key.toString());
     }
 
-    const result = client.getSqlService().execute('SELECT * FROM varcharMap WHERE this = ? OR this = ?', ['7', '2']);
+    const result = client.getSql().execute('SELECT * FROM varcharMap WHERE this = ? OR this = ?', ['7', '2']);
     const rowMetadata = await result.getRowMetadata();
     const columnIndex = rowMetadata.findColumn('this');
     const columnMetadata = rowMetadata.getColumn(columnIndex);
@@ -71,7 +70,7 @@ const integersExample = async (client) => {
         await someMap.set(key, long.fromNumber(key * 2));
     }
 
-    const result = client.getSqlService().execute(
+    const result = client.getSql().execute(
         'SELECT * FROM bigintMap WHERE this > ? AND this < ?',
         [long.fromNumber(10), long.fromNumber(18)]
     );
@@ -85,7 +84,7 @@ const integersExample = async (client) => {
     }
 
     // Casting example. Casting to other integer types is also possible.
-    const result2 = client.getSqlService().execute(
+    const result2 = client.getSql().execute(
         'SELECT * FROM bigintMap WHERE this > CAST(? AS BIGINT) AND this < CAST(? AS BIGINT)',
         [10, 18]
     );
@@ -107,7 +106,7 @@ const objectExample = async (client) => {
 
     // Note: If you do not specify this and use *, by default age and height columns will be fetched instead of this.
     // This is true only for complex custom objects like portable and identified serializable.
-    const result = client.getSqlService().execute('SELECT __key, this FROM studentMap WHERE age > ? AND age < ?',
+    const result = client.getSql().execute('SELECT __key, this FROM studentMap WHERE age > ? AND age < ?',
         [long.fromNumber(3), long.fromNumber(8)]
     );
 
@@ -124,7 +123,7 @@ const objectExample = async (client) => {
 
 (async () => {
     try {
-
+        // Since we will use a portable, we register it:
         const portableFactory = (classId) => {
             if (classId === 1) {
                 return new Student();

@@ -16,6 +16,9 @@
 'use strict';
 
 const Long = require('long');
+const { UUID } = require('../../../lib/core/UUID');
+const { LocalDate, LocalDateTime, LocalTime, OffsetDateTime } = require('../../../lib/core/DatetimeClasses');
+const { Big } = require('../../../lib/core/BigDecimal');
 const { HeapData } = require('../../../lib/serialization/HeapData');
 const AnInnerPortable = require('./AnInnerPortable');
 const AnIdentifiedDataSerializable = require('./AnIdentifiedDataSerializable');
@@ -34,6 +37,7 @@ to.aFloat = 900.5678;
 to.anInteger = 56789;
 to.aLong = Long.fromNumber(-50992225);
 to.aString = '';
+to.aUUID = new UUID(to.aLong, Long.fromNumber(to.anInteger));
 
 for (let ci = 0; ci < 65535; ci++) {
     if (!(ci >= 55296 && ci < 57344)) {
@@ -75,7 +79,13 @@ to.APortable = new APortable(
     to.aCustomByteArraySerializable, exports.aData
 );
 to.aDate = new Date(Date.UTC(1990, 2, 1, 0, 0, 0, 0));
+to.aBigDecimal = Big('31231');
 to.aClass = 'java.math.BigDecimal';
+
+to.aLocalDate = new LocalDate(2021, 6, 28);
+to.aLocalTime = new LocalTime(11, 22, 41, 123456789);
+to.aLocalDateTime = new LocalDateTime(to.aLocalDate, to.aLocalTime);
+to.aOffsetDateTime = new OffsetDateTime(to.aLocalDateTime, 64800);
 
 exports.portables = [to.AnInnerPortable, to.AnInnerPortable, to.AnInnerPortable];
 exports.testObjects = to;
